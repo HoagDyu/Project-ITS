@@ -1,0 +1,77 @@
+.upload-container{
+
+    width:100%;
+}
+
+.upload-container h2{
+
+    margin-bottom:20px;
+    color:#333;
+}
+
+.drop-zone{
+
+    border:3px dashed #4f8ef7;
+    background:#eef5ff;
+
+    border-radius:15px;
+
+    height: 50vh;
+
+    display:flex;
+    flex-direction:column;
+
+    justify-content:center;
+    align-items:center;
+
+    transition:.3s;
+}
+
+.drop-zone:hover{
+
+    background:#dfeeff;
+}
+
+.upload-icon{
+
+    font-size:80px;
+    color:#4f8ef7;
+
+    margin-bottom:20px;
+}
+
+.drop-zone h3{
+
+    color:#333;
+    margin-bottom:10px;
+}
+
+.drop-zone p{
+
+    color:#666;
+    margin-bottom:15px;
+}
+
+.upload-btn{
+
+    padding:12px 28px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#4f8ef7;
+
+    color:white;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.upload-btn:hover{
+
+    background:#2b6ee6;
+}
