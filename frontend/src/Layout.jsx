@@ -1,11 +1,11 @@
-import "./App.css";
+import "./Layout.css";
 import Uploader from "./components/Uploader";
 import Preview from "./components/Preview";
 import Log from "./components/Log";
 
-function App() {
+function Layout() {
   return (
-    <div className="app-container">
+    <div className="layout-container">
 
       {/* Bên trái */}
       <div className="left-panel">
@@ -22,4 +22,4 @@ function App() {
   );
 }
 
-export default App;
+export default Layout;
