@@ -47,8 +47,15 @@ class ReadFile:
         file_bytes = file.read()
         np_array = np.frombuffer(file_bytes, np.uint8)
         img_read = cv.imdecode(np_array, cv.IMREAD_COLOR)
+        if img_read is None:
+            raise ValueError("Khong the doc anh upload")
         vehicles = DetectObject.detect_object(img_read)
-        img.append(ReadFile.build_frame_payload(img_read, vehicles, quality=90))
+        height, width = img_read.shape[:2]
+        img.append({
+            "vehicles": vehicles,
+            "frame_width": width,
+            "frame_height": height,
+        })
         return img
 
     @staticmethod

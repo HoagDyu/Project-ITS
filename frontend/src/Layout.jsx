@@ -50,7 +50,14 @@ function Layout() {
     if (!sessionId || messages.length === 0) return;
 
     const last = messages[messages.length - 1];
-    const key = `${last.topic}-${last.time}-${last.data?.frame_index ?? ""}-${last.data?.status ?? ""}`;
+    const key = [
+      last.topic,
+      last.data?.status ?? "",
+      last.data?.type ?? "",
+      last.data?.frame_index ?? "",
+      last.data?.total_frames ?? "",
+      last.data?.message ?? "",
+    ].join("-");
     if (processedTopics.current.has(key)) return;
     processedTopics.current.add(key);
 
@@ -86,17 +93,17 @@ function Layout() {
 
         if (data.type === "image") {
           queueMicrotask(() => setImageVehicles(vehicles));
-          if (data.frame_image) {
-            queueMicrotask(() =>
-              setCurrentFrame({
-                frameIndex: 0,
-                imageSrc: `data:${data.frame_mime || "image/jpeg"};base64,${data.frame_image}`,
-                width: data.frame_width,
-                height: data.frame_height,
-                vehicles,
-              })
-            );
-          }
+          queueMicrotask(() =>
+            setCurrentFrame({
+              frameIndex: 0,
+              imageSrc: data.frame_image
+                ? `data:${data.frame_mime || "image/jpeg"};base64,${data.frame_image}`
+                : previewUrl,
+              width: data.frame_width,
+              height: data.frame_height,
+              vehicles,
+            })
+          );
         } else if (data.fps) {
           queueMicrotask(() => setFps(data.fps));
         }
@@ -112,7 +119,7 @@ function Layout() {
         addLog("ERROR", data.message, "log-error");
       }
     }
-  }, [messages, sessionId]);
+  }, [messages, previewUrl, sessionId]);
 
   useEffect(() => {
     if (sessionId && connected) {

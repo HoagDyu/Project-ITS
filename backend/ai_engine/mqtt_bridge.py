@@ -1,4 +1,5 @@
 import io
+
 from mqtt_service.mqtt_client import publish
 
 
@@ -18,19 +19,27 @@ class InMemoryFileWrapper:
             yield data
 
 
+def publish_result(session_id: str, payload: dict):
+    publish(
+        f"detection/{session_id}/result",
+        {"session_id": session_id, **payload},
+        qos=1,
+        retain=True,
+    )
+
+
 def process_and_publish(file_wrapper, session_id: str):
     from ai_engine.apps import ReadFile
 
     name_lower = file_wrapper.name.lower()
-    is_image = name_lower.endswith(('.png', '.jpeg', '.jpg'))
-    is_video = name_lower.endswith(('.mp4', '.mov'))
+    is_image = name_lower.endswith((".png", ".jpeg", ".jpg"))
+    is_video = name_lower.endswith((".mp4", ".mov"))
 
     if not is_image and not is_video:
-        publish(f"detection/{session_id}/result", {
-            "session_id": session_id,
+        publish_result(session_id, {
             "status": "error",
-            "message": "Định dạng file không được hỗ trợ",
-        }, qos=1)
+            "message": "Dinh dang file khong duoc ho tro",
+        })
         return
 
     try:
@@ -39,48 +48,43 @@ def process_and_publish(file_wrapper, session_id: str):
         if is_image:
             frame_data = result[0] if result else {}
             detections = frame_data.get("vehicles", [])
-            publish(f"detection/{session_id}/result", {
-                "session_id": session_id,
+            publish_result(session_id, {
                 "status": "done",
                 "type": "image",
                 "vehicles": detections,
                 "frame_width": frame_data.get("frame_width"),
                 "frame_height": frame_data.get("frame_height"),
-                "frame_image": frame_data.get("frame_image"),
-                "frame_mime": frame_data.get("frame_mime"),
-            }, qos=1)
+            })
+            return
 
-        else:  # video — result là generator, publish từng frame
-            frame_index = 0
-            fps = None
-            for frame_data in result:
-                vehicles = frame_data["vehicles"]
-                fps = frame_data["fps"]
+        frame_index = 0
+        fps = None
+        for frame_data in result:
+            vehicles = frame_data["vehicles"]
+            fps = frame_data["fps"]
 
-                publish(f"detection/{session_id}/frame", {
-                    "session_id": session_id,
-                    "status": "processing",
-                    "frame_index": frame_index,
-                    "fps": fps,
-                    "vehicles": vehicles,
-                    "frame_width": frame_data["frame_width"],
-                    "frame_height": frame_data["frame_height"],
-                    "frame_image": frame_data["frame_image"],
-                    "frame_mime": frame_data["frame_mime"],
-                }, qos=0)
-                frame_index += 1
-
-            publish(f"detection/{session_id}/result", {
+            publish(f"detection/{session_id}/frame", {
                 "session_id": session_id,
-                "status": "done",
-                "type": "video",
-                "total_frames": frame_index,
+                "status": "processing",
+                "frame_index": frame_index,
                 "fps": fps,
-            }, qos=1)
+                "vehicles": vehicles,
+                "frame_width": frame_data["frame_width"],
+                "frame_height": frame_data["frame_height"],
+                "frame_image": frame_data["frame_image"],
+                "frame_mime": frame_data["frame_mime"],
+            }, qos=0)
+            frame_index += 1
 
-    except Exception as e:
-        publish(f"detection/{session_id}/result", {
-            "session_id": session_id,
+        publish_result(session_id, {
+            "status": "done",
+            "type": "video",
+            "total_frames": frame_index,
+            "fps": fps,
+        })
+
+    except Exception as exc:
+        publish_result(session_id, {
             "status": "error",
-            "message": str(e),
-        }, qos=1)
+            "message": str(exc),
+        })
