@@ -63,12 +63,26 @@ class ReadFile:
                 temp_path.unlink()
 
 class DetectObject:
+    _model = YOLO("detect_best.pt")
+
     @staticmethod
     def detect_object(frame):
-        model = YOLO("yolov8n.pt")
-        result = model(frame)
-        return result
+        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.1)[0]
+        detections = []
+        for box in result.boxes:
+            x1, y1, x2, y2 = box.xyxy[0].tolist()      
+            conf = float(box.conf[0])                   
+            cls_id = int(box.cls[0])                    
+            cls_name = DetectObject._model.names[cls_id] 
+            track_id = int(box.id[0]) if box.id is not None else None
+            detections.append({
+                "track_id": track_id,
+                "class": cls_name,
+                "confidence": round(conf, 2),
+                "bbox": [round(x1,1), round(y1,1), round(x2,1), round(y2,1)]
+            })
+        return detections
 
-            
+
 
         

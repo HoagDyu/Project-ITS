@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 3
+names: ['Ambulance', 'Police car', 'fire truck']
+
+roboflow:
+  workspace: minhs-workspace-b2juj
+  project: emergency-vehicle-detection-zntwu
+  version: 5
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/minhs-workspace-b2juj/emergency-vehicle-detection-zntwu/dataset/5
