@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+import base64
 import cv2 as cv
 import numpy as np
 from pathlib import Path
@@ -10,6 +11,24 @@ class AiEngineConfig(AppConfig):
     name = 'ai_engine'
 
 class ReadFile:
+    @staticmethod
+    def encode_frame(frame, quality=80):
+        ok, buffer = cv.imencode(".jpg", frame, [int(cv.IMWRITE_JPEG_QUALITY), quality])
+        if not ok:
+            raise ValueError("Khong the encode frame thanh JPEG")
+        return base64.b64encode(buffer).decode("ascii")
+
+    @staticmethod
+    def build_frame_payload(frame, vehicles, quality=80):
+        height, width = frame.shape[:2]
+        return {
+            "vehicles": vehicles,
+            "frame_width": width,
+            "frame_height": height,
+            "frame_image": ReadFile.encode_frame(frame, quality),
+            "frame_mime": "image/jpeg",
+        }
+
     @staticmethod
     def process_file(file):
         if file is None:
@@ -28,8 +47,8 @@ class ReadFile:
         file_bytes = file.read()
         np_array = np.frombuffer(file_bytes, np.uint8)
         img_read = cv.imdecode(np_array, cv.IMREAD_COLOR)
-        img_detect = DetectObject.detect_object(img_read)
-        img.append(img_detect)
+        vehicles = DetectObject.detect_object(img_read)
+        img.append(ReadFile.build_frame_payload(img_read, vehicles, quality=90))
         return img
 
     @staticmethod
@@ -48,6 +67,7 @@ class ReadFile:
                     temp_file.write(file.read())
 
             cap = cv.VideoCapture(str(temp_path))
+            fps = cap.get(cv.CAP_PROP_FPS) or 25
 
             try:
                 while True:
@@ -55,7 +75,8 @@ class ReadFile:
                     if not ret:
                         break
                     detected_obj = DetectObject.detect_object(frame)
-                    yield detected_obj
+                    frame_payload = ReadFile.build_frame_payload(frame, detected_obj, quality=70)
+                    yield {**frame_payload, "fps": fps}
             finally:
                 cap.release()
         finally:
@@ -67,7 +88,7 @@ class DetectObject:
 
     @staticmethod
     def detect_object(frame):
-        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.3)[0]
+        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.4)[0]
         detections = []
         for box in result.boxes:
             x1, y1, x2, y2 = box.xyxy[0].tolist()      

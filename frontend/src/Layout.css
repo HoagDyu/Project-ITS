@@ -1,47 +1,59 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+* {
+  box-sizing: border-box;
 }
 
-body{
-    background:#f5f7fa;
+body {
+  background: #050505;
+  color: #f3f4f6;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
 }
 
-.app-container{
-
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-
-    padding:20px;
-    min-height:100vh;
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(300px, 3fr);
+  gap: 20px;
+  width: 100%;
+  height: 100vh;
+  min-height: 0;
+  padding: 20px;
+  overflow: hidden;
 }
 
-.left-panel,
-.right-panel{
-
-    background:white;
-    border-radius:12px;
-    padding:20px;
-    box-shadow:0 0 10px rgba(0,0,0,.08);
+.preview-panel,
+.upload-panel,
+.log-panel {
+  min-width: 0;
+  min-height: 0;
 }
 
-.right-panel{
-
-    display:flex;
-    flex-direction:column;
-    gap:20px;
+.side-panel {
+  display: grid;
+  grid-template-rows: minmax(120px, 1fr) minmax(0, 4fr);
+  gap: 20px;
+  min-width: 0;
+  min-height: 0;
 }
 
-/* Responsive */
+.preview-panel > *,
+.upload-panel > *,
+.log-panel > * {
+  height: 100%;
+}
 
-@media(max-width:900px){
+@media (max-width: 980px) {
+  body {
+    overflow: auto;
+  }
 
-    .app-container{
+  .layout {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
 
-        grid-template-columns:1fr;
-    }
-
+  .side-panel {
+    grid-template-rows: auto auto;
+  }
 }
