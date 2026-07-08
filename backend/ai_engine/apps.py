@@ -63,11 +63,11 @@ class ReadFile:
                 temp_path.unlink()
 
 class DetectObject:
-    _model = YOLO("detect_best.pt")
+    _model = YOLO(r"D:\Code\project\Project-ITS\backend\detect_best.pt")
 
     @staticmethod
     def detect_object(frame):
-        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.1)[0]
+        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.3)[0]
         detections = []
         for box in result.boxes:
             x1, y1, x2, y2 = box.xyxy[0].tolist()      

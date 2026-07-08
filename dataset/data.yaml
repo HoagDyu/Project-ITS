@@ -1,13 +1,13 @@
-train: train/images
-val: valid/images
-test: test/images
+train: ../train/images
+val: ../valid/images
+test: ../test/images
 
 nc: 3
-names: ['Ambulance', 'Police car', 'fire truck']
+names: ['ambulance', 'police', 'pompier']
 
 roboflow:
-  workspace: minhs-workspace-b2juj
-  project: emergency-vehicle-detection-zntwu
-  version: 5
+  workspace: thanhs-workspace-pzwng
+  project: priority-vehicles-u1uhl
+  version: 1
   license: CC BY 4.0
-  url: https://universe.roboflow.com/minhs-workspace-b2juj/emergency-vehicle-detection-zntwu/dataset/5
+  url: https://universe.roboflow.com/thanhs-workspace-pzwng/priority-vehicles-u1uhl/dataset/1
