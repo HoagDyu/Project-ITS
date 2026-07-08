@@ -1,25 +1,24 @@
 import "./Preview.css";
 
-function Preview() {
+function Preview({ file, previewUrl }) {
+  const isVideo = file?.type?.startsWith("video/");
+
   return (
     <div className="preview-container">
       <h2>Media Preview</h2>
 
       <div className="media-box">
-        <img
-          src="https://images.unsplash.com/photo-1503376780353-7e6692767b70"
-          alt="Preview"
-        />
-      </div>
+        {!previewUrl && <p className="empty-preview">Chua co file duoc chon.</p>}
 
-      <div className="media-box">
-        <video controls>
-          <source
-            src="https://www.w3schools.com/html/mov_bbb.mp4"
-            type="video/mp4"
-          />
-          Trình duyệt không hỗ trợ video.
-        </video>
+        {previewUrl && isVideo && (
+          <video controls src={previewUrl}>
+            Trinh duyet khong ho tro video.
+          </video>
+        )}
+
+        {previewUrl && !isVideo && (
+          <img src={previewUrl} alt={file?.name || "Preview"} />
+        )}
       </div>
     </div>
   );

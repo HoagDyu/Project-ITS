@@ -69,9 +69,24 @@
     cursor:pointer;
 
     transition:.3s;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .upload-btn:hover{
 
     background:#2b6ee6;
+}
+
+.upload-btn.disabled{
+
+    opacity:.7;
+    cursor:not-allowed;
+}
+
+.upload-btn input{
+
+    display:none;
 }

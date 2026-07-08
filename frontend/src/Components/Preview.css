@@ -23,6 +23,10 @@
   align-items: center;
 }
 
+.empty-preview {
+  color: #777;
+}
+
 .media-box img,
 .media-box video {
   width: 100%;

@@ -63,7 +63,7 @@ class ReadFile:
                 temp_path.unlink()
 
 class DetectObject:
-    _model = YOLO(r"D:\Code\project\Project-ITS\backend\detect_best.pt")
+    _model = YOLO("detect_best.pt")
 
     @staticmethod
     def detect_object(frame):
