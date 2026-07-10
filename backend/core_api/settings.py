@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'core_api',
     'ai_engine',
     'mqtt_service',
-    'temp_upload',
 ]
 
 MIDDLEWARE = [

@@ -58,16 +58,13 @@ def process_and_publish(file_wrapper, session_id: str):
             return
 
         frame_index = 0
-        fps = None
         for frame_data in result:
             vehicles = frame_data["vehicles"]
-            fps = frame_data["fps"]
 
             publish(f"detection/{session_id}/frame", {
                 "session_id": session_id,
                 "status": "processing",
                 "frame_index": frame_index,
-                "fps": fps,
                 "vehicles": vehicles,
                 "frame_width": frame_data["frame_width"],
                 "frame_height": frame_data["frame_height"],
@@ -80,7 +77,6 @@ def process_and_publish(file_wrapper, session_id: str):
             "status": "done",
             "type": "video",
             "total_frames": frame_index,
-            "fps": fps,
         })
 
     except Exception as exc:

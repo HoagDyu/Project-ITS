@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def _get_env(key: str) -> str:
     value = os.environ.get(key)
     if not value:
-        raise RuntimeError(f"Thiếu biến môi trường {key} — kiểm tra file .env đã được load chưa")
+        raise RuntimeError(f"Thiếu biến môi trường {key}")
     return value
 
 

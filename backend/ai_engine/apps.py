@@ -19,7 +19,7 @@ class ReadFile:
         return base64.b64encode(buffer).decode("ascii")
 
     @staticmethod
-    def build_frame_payload(frame, vehicles, quality=80):
+    def create_frame_payload(frame, vehicles, quality=80):
         height, width = frame.shape[:2]
         return {
             "vehicles": vehicles,
@@ -74,7 +74,6 @@ class ReadFile:
                     temp_file.write(file.read())
 
             cap = cv.VideoCapture(str(temp_path))
-            fps = cap.get(cv.CAP_PROP_FPS) or 25
 
             try:
                 while True:
@@ -82,8 +81,8 @@ class ReadFile:
                     if not ret:
                         break
                     detected_obj = DetectObject.detect_object(frame)
-                    frame_payload = ReadFile.build_frame_payload(frame, detected_obj, quality=70)
-                    yield {**frame_payload, "fps": fps}
+                    frame_payload = ReadFile.create_frame_payload(frame, detected_obj, quality=70)
+                    yield frame_payload
             finally:
                 cap.release()
         finally:
@@ -95,7 +94,7 @@ class DetectObject:
 
     @staticmethod
     def detect_object(frame):
-        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.4)[0]
+        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.1)[0]
         detections = []
         for box in result.boxes:
             x1, y1, x2, y2 = box.xyxy[0].tolist()      
