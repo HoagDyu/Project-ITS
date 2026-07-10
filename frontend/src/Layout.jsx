@@ -26,7 +26,6 @@ function Layout() {
   const [isUploading, setIsUploading] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [logs, setLogs] = useState([]);
-  const [fps, setFps] = useState(null);
   const [imageVehicles, setImageVehicles] = useState(null);
   const [latestFrameIndex, setLatestFrameIndex] = useState(null);
   const [currentFrame, setCurrentFrame] = useState(null);
@@ -66,8 +65,6 @@ function Layout() {
     if (last.topic.endsWith("/frame")) {
       const vehicles = data.vehicles || [];
       framesRef.current[data.frame_index] = vehicles;
-      if (data.fps) queueMicrotask(() => setFps(data.fps));
-      queueMicrotask(() => setLatestFrameIndex(data.frame_index));
 
       if (data.frame_image) {
         queueMicrotask(() =>
@@ -104,9 +101,7 @@ function Layout() {
               vehicles,
             })
           );
-        } else if (data.fps) {
-          queueMicrotask(() => setFps(data.fps));
-        }
+        } 
 
         addLog(
           "SUCCESS",
@@ -134,7 +129,6 @@ function Layout() {
     setPreviewUrl(URL.createObjectURL(selectedFile));
     setIsUploading(true);
     setSessionId(null);
-    setFps(null);
     setImageVehicles(null);
     setLatestFrameIndex(null);
     setCurrentFrame(null);
@@ -160,7 +154,6 @@ function Layout() {
           file={file}
           previewUrl={previewUrl}
           framesRef={framesRef}
-          fps={fps}
           latestFrameIndex={latestFrameIndex}
           currentFrame={currentFrame}
           imageVehicles={imageVehicles}
