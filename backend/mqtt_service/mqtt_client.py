@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def _get_env(key: str) -> str:
     value = os.environ.get(key)
     if not value:
-        raise RuntimeError(f"Thiếu biến môi trường {key}")
+        raise RuntimeError(f"Thiếu {key}")
     return value
 
 
@@ -38,23 +38,21 @@ def on_disconnect(client, userdata, rc, properties=None):
 
 
 def _build_client():
-    client = mqtt.Client(
-        callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
-        client_id="django_backend_publisher",
+    client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
+    client_id="backend_publisher"
     )
-    client.username_pw_set(MQTT_USER, MQTT_PASS)
+    client.username_pw_set(username=MQTT_USER, password=MQTT_PASS)
     client.tls_set(tls_version=ssl.PROTOCOL_TLS_CLIENT)
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
-    client.connect(MQTT_HOST, MQTT_PORT, keepalive=60)
+    client.connect(host=MQTT_HOST, port=MQTT_PORT, keepalive=60)
     client.loop_start()
     return client
 
-
 def publish(topic: str, payload: dict, qos: int = 0, retain: bool = False):
     client = get_client()
-    result = client.publish(topic, json.dumps(payload), qos=qos, retain=retain)
+    result = client.publish(topic=topic, payload=json.dumps(payload),qos=qos,retain=retain)
     result.wait_for_publish(timeout=5)
     if not result.is_published():
-        logger.error(f"Publish thất bại: topic={topic}")
+        logger.error(f"Publish không thành công, topic = {topic}")
     return result.is_published()

@@ -38,7 +38,6 @@ export function useMqtt(topic) {
 
     client.on("error", (err) => console.error("MQTT error:", err));
 
-    clientRef.current = client;
     return () => client.end();
   }, [topic]);
 

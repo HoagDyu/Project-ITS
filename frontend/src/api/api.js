@@ -5,7 +5,7 @@ const api = axios.create({
   timeout: 120000,
 });
 
-export async function uploadMedia(file) {
+export async function uploadForDetection(file) {
   const formData = new FormData();
   formData.append("file", file);
 

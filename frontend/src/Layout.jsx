@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Uploader from "./Components/Uploader";
 import Preview from "./Components/Preview";
 import Log from "./Components/Log";
-import { uploadForDetection } from "./api/detection";
+import { uploadForDetection } from "./api/api.js";
 import { useMqtt } from "./hooks/useMqtt";
 import "./Layout.css";
 
@@ -78,11 +78,13 @@ function Layout() {
         );
       }
 
-      addLog(
-        "DETECT",
-        `Frame ${data.frame_index}: ${vehicles.length} phuong tien${getTrackIdText(vehicles)}`,
-        "log-info"
-      );
+      if (vehicles.length > 0) {
+        addLog(
+          "DETECT",
+          `Frame ${data.frame_index}: ${vehicles.length} phuong tien${getTrackIdText(vehicles)}`,
+          "log-info"
+        );
+      }
     } else if (last.topic.endsWith("/result")) {
       if (data.status === "done") {
         const vehicles = data.vehicles || [];

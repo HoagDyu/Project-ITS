@@ -17,7 +17,6 @@ def receive_file(request):
         return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        # đọc hết bytes NGAY tại đây (thread chính), tránh file bị đóng khi thread nền chạy
         file_bytes = uploaded_file.read()
         file_wrapper = InMemoryFileWrapper(uploaded_file.name, file_bytes)
 

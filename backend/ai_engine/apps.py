@@ -43,7 +43,6 @@ class ReadFile:
 
     @staticmethod
     def read_img(file):
-        img = []
         file_bytes = file.read()
         np_array = np.frombuffer(file_bytes, np.uint8)
         img_read = cv.imdecode(np_array, cv.IMREAD_COLOR)
@@ -51,11 +50,11 @@ class ReadFile:
             raise ValueError("Khong the doc anh upload")
         vehicles = DetectObject.detect_object(img_read)
         height, width = img_read.shape[:2]
-        img.append({
+        img = {
             "vehicles": vehicles,
             "frame_width": width,
             "frame_height": height,
-        })
+        }
         return img
 
     @staticmethod
@@ -94,20 +93,23 @@ class DetectObject:
 
     @staticmethod
     def detect_object(frame):
-        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.1)[0]
+        result = DetectObject._model.track(source=frame, tracker = "botsort.yaml", persist=True, verbose=False, conf=0.2)[0]
         detections = []
         for box in result.boxes:
+            if box.cls is None:
+                continue
             x1, y1, x2, y2 = box.xyxy[0].tolist()      
             conf = float(box.conf[0])                   
             cls_id = int(box.cls[0])                    
             cls_name = DetectObject._model.names[cls_id] 
             track_id = int(box.id[0]) if box.id is not None else None
-            detections.append({
+            detections_dict = {
                 "track_id": track_id,
                 "class": cls_name,
                 "confidence": round(conf, 2),
                 "bbox": [round(x1,1), round(y1,1), round(x2,1), round(y2,1)]
-            })
+            }
+            detections.append(detections_dict)
         return detections
 
 
